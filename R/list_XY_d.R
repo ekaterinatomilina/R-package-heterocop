@@ -24,7 +24,7 @@ matrice_diag_blocs <- function(blocs, coeff){
     else{
       R[(sum(blocs[1:j-1])+1):sum(blocs[1:j]), (sum(blocs[1:j-1])+1):sum(blocs[1:j])] = coeff[compteur]
       compteur = compteur+1
-      }
+    }
   }
   for (i in 1:d){R[i,i] = 1}
   return(R)
@@ -32,6 +32,8 @@ matrice_diag_blocs <- function(blocs, coeff){
 
 
 #' list_XY_d
+#'
+#' @description multidimensional data simulator based on the generalized inverse method
 #'
 #' @param n Integer, length of the simulated data
 #' @param blocks vector, vector with the size of the blocks on the diagonal of the matrix
@@ -42,10 +44,9 @@ matrice_diag_blocs <- function(blocs, coeff){
 #' @param random if TRUE the distribution of each laws will be randomly distibuted among the blocks. if FALSE the order enter as a parameter will be preserved. (by default : random = TRUE)
 #'
 #' @return list of d vectors of length n such that the joint distribution function of those vectors is given  by F(.,.) = C(F_1(.),..., F_d(.)) where C is the gaussian Copula related to a block diagonal matrix and F_1,.., F_d are respectively the distribution functions of the margins.
-#
+#' @examples list_XY_d(100, c(3,1,4,5), c(0.5,0.8,0.3), list(qexp, qnorm, qbinom), list(3, c(0,1), c(20,0.5)), c(5,4,4), random = TRUE)
 #' @export
 #'
-#' @examples list_XY_d(100, c(3,1,4,5), c(0.5,0.8,0.3), list(qexp, qnorm, qbinom), list(3, c(0,1), c(20,0.5)), c(5,4,4), random = TRUE)
 list_XY_d <- function(n, blocks, coeff, list_qlaws, list_param, repetition, random = TRUE){
 
   R = matrice_diag_blocs(blocks, coeff)
@@ -72,6 +73,8 @@ list_XY_d <- function(n, blocks, coeff, list_qlaws, list_param, repetition, rand
   }
   return(liste_Xs)
 }
+
+#'
 
 
 

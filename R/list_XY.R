@@ -21,7 +21,8 @@ gaussCopule <- function(R, n){
 }
 
 
-#' Data generator
+#' list_XY
+#' @description  2D data simulator based on the generalized inverse method
 #'
 #' @param R Matrix, 2x2 correlation matrix
 #' @param n Integer, length of the simulated data
@@ -29,9 +30,8 @@ gaussCopule <- function(R, n){
 #' @param list_param List, list with lists of parameters
 #'
 #' @return list of two vectors of length n such that the joint distribution function of those vectors is given  by F(.,.) = C(F_1(.), F_2(.)) where C is the gaussian Copula related to R and F_1, F_2 are respectively the distribution functions of the margins.
-#' @export
-#'
 #' @examples list_XY(matrix(c(1,0.5,0.5,1),2,2), 100, list(loi1 = qexp, loi2 = qnorm), list(3,c(0,1)))
+#' @export
 list_XY <- function(R, n, list_qlaws, list_param){
   XY = gaussCopule(R, n)
   dd = 2
@@ -47,5 +47,8 @@ list_XY <- function(R, n, list_qlaws, list_param){
   }
   return(liste_Xs)
 }
+
+
+
 
 
