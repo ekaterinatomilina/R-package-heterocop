@@ -18,7 +18,7 @@ matrice_diag_blocs <- function(blocs, coeff){
   n = length(blocs)
   R = matrix(0,d,d)
   R[1:blocs[1],1:blocs[1]] = coeff[1]
-  compteur = 1
+  compteur = 2
   for (j in 2:n){
     if (blocs[j]==1){R[j,j]=1}
     else{
