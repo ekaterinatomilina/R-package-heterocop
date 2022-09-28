@@ -12,8 +12,12 @@ rho_estim_2(X, Y)
 \item{Y}{list, list of iid random variables (with the same length as X)}
 }
 \value{
-an estimate of the correlation matrix parameter
+an estimation of the correlation matrix parameter
 }
 \description{
-rho_estim_2
+given two random vectors, this function estimates the correlation coefficient associated to the gaussian copula C such that the joint distribution function of the random vectors is C(F1(.), F2(.)) with  F1 and F2 the margins distribution function.
+}
+\examples{
+XY = list_XY(matrix(c(1,0.5,0.5,1),2,2), 100, list(loi1 = qexp, loi2 = qnorm), list(3,c(0,1)))
+          rho_estim_2(XY[[1]], XY[[2]])
 }

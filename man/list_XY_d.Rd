@@ -2,7 +2,7 @@
 % Please edit documentation in R/list_XY_d.R
 \name{list_XY_d}
 \alias{list_XY_d}
-\title{Title list_XY_d}
+\title{list_XY_d}
 \usage{
 list_XY_d(n, blocks, coeff, list_qlaws, list_param, repetition, random = TRUE)
 }
@@ -25,7 +25,7 @@ list_XY_d(n, blocks, coeff, list_qlaws, list_param, repetition, random = TRUE)
 list of d vectors of length n such that the joint distribution function of those vectors is given  by F(.,.) = C(F_1(.),..., F_d(.)) where C is the gaussian Copula related to a block diagonal matrix and F_1,.., F_d are respectively the distribution functions of the margins.
 }
 \description{
-Title list_XY_d
+multidimensional data simulator based on the generalized inverse method
 }
 \examples{
 list_XY_d(100, c(3,1,4,5), c(0.5,0.8,0.3), list(qexp, qnorm, qbinom), list(3, c(0,1), c(20,0.5)), c(5,4,4), random = TRUE)

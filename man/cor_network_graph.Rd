@@ -24,9 +24,10 @@ cor_network_graph(
 a graph where the vertices are correlations and the edges are random variables.
 }
 \description{
-cor_network_graph
+Create a correlation networks for heterogeneous data
 }
 \examples{
-cor_network_graph_ (list(X,Y,Z), 0.3, TRUE, "orange")
+list_X = list_XY_d(100, c(3,1,4,5), c(0.5,0.8,0.3), list(qexp, qnorm, qbinom), list(3, c(0,1), c(20,0.5)), c(5,4,4), random = TRUE)
+cor_network_graph(list_X, 0.3, TRUE, "orange")
 
 }
