@@ -1,0 +1,1 @@
+- Garder le package rcopula ou notre fonction?
