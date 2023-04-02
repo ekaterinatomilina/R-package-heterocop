@@ -18,7 +18,7 @@ list_fdr_d <- function(listeX, Type){
 
 #' rho_estim_d
 #'
-#' @description given d random vectors, this function estimates the correlations matrix associated to the gaussian copula C such that the joint distribution function of the random vectors is C(F1(.), ..., Fd(.)) with F1, ..., Fd the distribution functions of the margins.
+#' @description given d random vectors, this function estimates the correlation matrix associated to the gaussian copula C such that the joint distribution function of the random vectors is C(F1(.), ..., Fd(.)) with F1, ..., Fd the distribution functions of the margins.
 #'
 #' @param list_var list, list of d random vectors with the same length
 #' @param Shape The shape returned by the function ("vector" or "matrix")
@@ -26,7 +26,7 @@ list_fdr_d <- function(listeX, Type){
 #' @return A correlation matrix or a vector with the estimates of the correlation coefficients
 #' @import mvtnorm
 #'
-#' @examples list_X = list_XY_d(100, c(3,1,4,5), c(0.5,0.8,0.3), list(qexp, qnorm, qbinom), list(3, c(0,1), c(20,0.5)), c(5,4,4), random = TRUE)
+#' @examples list_X = CopulaSim(100, c(3,1,4), c(0.5,0.8,0.3), list(function(p){qexp(p=p, rate=1)}, function(p){qnorm(p=p, mean=0, sd=1)}, function(p){qnorm(p=p, mean=0.76, sd=2)}), c(5,4,4), random = TRUE)
 #'           rho_estim_d(list_X, "matrix")
 #' @export
 rho_estim_d <- function(list_var, Shape){

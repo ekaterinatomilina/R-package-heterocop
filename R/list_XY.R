@@ -21,28 +21,6 @@ gaussCopule <- function(R, n){
 }
 
 
-#' list_XY
-#' @description  2D data simulator based on the generalized inverse method
-#'
-#' @param R Matrix, 2x2 correlation matrix
-#' @param n Integer, length of the simulated data
-#' @param list_qlaws List, list of two quasi-inverse functions of one argument
-#'
-#' @return list of two vectors of length n such that the joint distribution function of those vectors is given  by F(.,.) = C(F_1(.), F_2(.)) where C is the gaussian Copula related to R and F_1, F_2 are respectively the distribution functions of the margins.
-#' @examples list_XY(matrix(c(1,0.5,0.5,1),2,2), 100, list(loi1 = function(p){qexp(p=p, rate=1)}, loi2 = function(p){qnorm(p=p, mean=0, sd=1)}))
-#' @export
-list_XY <-
-    function (R, n, list_qlaws) 
-{
-    XY = gaussCopule(R, n)
-    dd = 2
-    liste_Xs = c()
-    for (i in 1:dd) {
-        liste_Xs[[i]] = list_qlaws[[i]](XY[, i])
-    }
-    return(liste_Xs)
-}
-
 
 
 
