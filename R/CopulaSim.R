@@ -7,34 +7,24 @@ VecEstim <- function(Corr){
   return(rho)
 }
 
-gaussCopule<- function(R, n){
+gaussCopule <- function(R, n){
   d = dim(R)[1]
-  A = as.matrix(eigen(R)$vectors%*%diag(sqrt(eigen(R)$values)))
-  data = matrix(0, n, d)
-  for (i in c(1:n)){
-    z = as.matrix(rnorm(d, mean = 0, sd = 1))
-    x = pnorm(A%*%z)
-    data[i,] = t(x)}
-  data = data.frame(data)
+  A = as.matrix(eigen(R)$vectors%*%diag(sqrt(eigen(R)$values)),d,d)
+  z = matrix(rnorm(n*d,mean=0,sd=1), n, d) 
+  data = t(pnorm(A%*%t(z)))
   return(data)
 }
 
 
 matrice_diag_blocs <- function(blocs, coeff){
+  step=c(0,cumsum(blocs))
   d = sum(blocs)
-  n = length(blocs)
   R = matrix(0,d,d)
-  R[1:blocs[1],1:blocs[1]] = coeff[1]
-  compteur = 2
-  for (j in 2:n){
-    if (blocs[j]==1){R[j,j]=1}
-    else{
-      R[(sum(blocs[1:j-1])+1):sum(blocs[1:j]), (sum(blocs[1:j-1])+1):sum(blocs[1:j])] = coeff[compteur]
-      compteur = compteur+1
-    }
+  for(i in 1:(length(step)-1)){
+    R[((step[i]+1):step[i+1]),((step[i]+1):step[i+1])]=coeff[i]
   }
   for (i in 1:d){R[i,i] = 1}
-  return(as.matrix(R))
+  return(R)
 }
 
 
@@ -54,7 +44,7 @@ matrice_diag_blocs <- function(blocs, coeff){
 #' @export
 #'
 CopulaSim <- function(n, blocks, coeff, list_qlaws, repetition, random = TRUE){
-
+  
   R = matrice_diag_blocs(blocks, coeff)
   d = sum(blocks)
   XY = gaussCopule(R,n)
@@ -73,6 +63,7 @@ CopulaSim <- function(n, blocks, coeff, list_qlaws, repetition, random = TRUE){
   }
   return(liste_Xs)
 }
+
 
 #'
 
