@@ -40,9 +40,9 @@ matrice_diag_blocs <- function(blocs, coeff){
 
 #' CopulaSim
 #'
-#' @description multidimensional data simulator based on the generalized inverse method
+#' @description multidimensional gaussian copula data simulator based on the generalized inverse method
 #'
-#' @param n Integer, length of the simulated data
+#' @param n Integer, length of the simulated data (=number of observations)
 #' @param blocks vector, vector with the size of the blocks on the diagonal of the matrix
 #' @param coeff vector, coefficient associated to each block (there is no need to inform the coefficient for one dimensional block (see examples))
 #' @param list_qlaws  List, list of  quasi-inverse functions (must be chosen among (qbeta, qbinom, qchisq, qubif, qexp, qf, qgamma, qgeom, qhyper, qnbinom, qnorm, qpois, qt, qweibull)) with their specified parameters
@@ -50,7 +50,7 @@ matrice_diag_blocs <- function(blocs, coeff){
 #' @param random if TRUE the distribution of each laws will be randomly distributed among the blocks. if FALSE the order enter as a parameter will be preserved. (by default : random = TRUE)
 #'
 #' @return matrix of d vectors (in columns) of length n such that the joint distribution function of those vectors is given  by F(.,.) = C(F_1(.),..., F_d(.)) where C is the gaussian Copula related to a block diagonal matrix and F_1,.., F_d are respectively the distribution functions of the margins.
-#' @examples Copulasim(100, c(3,1,4), c(0.2,0.1,0.5), list(function(p){qexp(p=p, rate=1)}, function(p){qnorm(p=p, mean=0, sd=1)}, function(p){qnorm(p=p, mean=0.76, sd=2)}), c(5,4,4), random = TRUE)
+#' @examples CopulaSim(100, c(3,1,4), c(0.2,0.1,0.5), list(function(p){qexp(p=p, rate=1)}, function(p){qnorm(p=p, mean=0, sd=1)}, function(p){qnorm(p=p, mean=0.76, sd=2)}), c(5,4,4), random = TRUE)
 #' @export
 #'
 CopulaSim <- function(n, blocks, coeff, list_qlaws, repetition, random = TRUE){
