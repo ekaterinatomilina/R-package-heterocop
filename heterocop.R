@@ -76,9 +76,9 @@ CopulaSim <- function(n, blocks, coeff, list_qlaws, repetition, random = TRUE){
 
 
 #This function estimates the CDF values for each variable
-fdr_d <- function(X, Type){
+fdr_d <- function(X, Type){ ###### WARNING: X MUST BE A DATA FRAME!
   F <- array(0,dim=c(dim(X)[1],dim(X)[2],2))
-  F[,,2] <- sapply(X,rank,ties.method="max")/(dim(X)[1]+1)
+  F[,,2] <- sapply(X,rank,ties.method="max")/(dim(X)[1]+1) 
   F_s <- rbind(0,apply(F[,,2],2,sort))
   for (i in 1:dim(X)[2]){
     if (Type[i] == "D"){
@@ -87,7 +87,7 @@ fdr_d <- function(X, Type){
       }
     }
   }
-  return(F)
+  return(F) # OK; SEE ALSO F[,1,2][rank(F[,1,2], ties.method="max")-1] (WARNING: TAKE CARE OF RANK=0)
 }
 
 #Gaussian copula expression
@@ -116,10 +116,12 @@ L_n_DD <- function(theta, F1m, F1p, F2m, F2p){
 }
 
 ### Log-Vraisemblance dans le cas continu/discret ###
-
+## F1: vector of the CDF values for the continuous variable
+## F2p: vector of the CDF values for the discrete variables
+## F2m: F2m[i] is the value in F2p that precedes F2p[i]
 L_n_CD <- function(theta, F1, F2m, F2p){
   delta=10**-9
-  mysummands <- pnorm(F2p,mean=theta*qnorm(F1),sd=sqrt(1-theta**2)) - pnorm(F2m,mean=theta*qnorm(F1),sd=sqrt(1-theta**2))
+  mysummands <- pnorm(qnorm(F2p),mean=theta*qnorm(F1),sd=sqrt(1-theta**2)) - pnorm(qnorm(F2m),mean=theta*qnorm(F1),sd=sqrt(1-theta**2))
   L <-sum(log(mapply(max,mysummands,MoreArgs=list(delta))))
   return(-L)
 }
