@@ -7,16 +7,17 @@
 diag_block_matrix(blocks, coeff)
 }
 \arguments{
-\item{blocks}{a vector containing the size of each block}
+\item{blocks}{a vector containing the sizes of the blocks}
 
-\item{coeff}{a vector containing the coefficient corresponding to each block}
+\item{coeff}{a vector containing the coefficient corresponding to each block, the coefficients must be between 0 and 1}
 }
 \value{
-the generated block matrix
+a diagonal block-matrix containing the specified coefficients
 }
 \description{
-This function enables the user to generate a diagonal matrix of size d x d
+This function enables the user to generate a diagonal block-matrix with homogeneous blocks
 }
 \examples{
-M <- diag_block_matrix(c(3,1,4), c(0.2,0.1,0.5))
+diag_block_matrix(c(3,4,5),c(0.3,0.4,0.8))
+
 }

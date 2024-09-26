@@ -7,20 +7,21 @@
 rho_estim(data, Type, parallel = TRUE)
 }
 \arguments{
-\item{data}{data frame containing the random vectors in columns}
+\item{data}{an nxd data frame containing n observations of d variables}
 
-\item{Type}{a vector of characters corresponding to the type of each function, "C" for continuous and "D" for discrete.}
+\item{Type}{a vector containing the type of the variables, "C" for continuous and "D" for discrete}
 
-\item{parallel}{TRUE if you want the code to be parallelized, FALSE if not}
+\item{parallel}{a boolean encoding whether the computations should be parallelized}
 }
 \value{
-A correlation matrix with the estimates of the correlation coefficients of the copula.
+the dxd estimated correlation matrix of the Gaussian copula
 }
 \description{
-given d random vectors X_1, .., X_d, this function estimates the correlation matrix associated to the gaussian copula C such that the joint distribution function of the random vectors is C(F1(.), ..., Fd(.)) with F1, ..., Fd the cumulative distribution functions of the margins.
+This function enables the user to estimate the correlation matrix of the Gaussian copula for a given dataset
 }
 \examples{
-data = CopulaSim(100, c(3,2,4), c(0.5,0.8,0.3), list(function(p){qexp(p=p, rate=1)}, function(p){qnorm(p=p, mean=0, sd=1)}, function(p){qnorm(p=p, mean=0.76, sd=2)}), c(3,4,2), random = TRUE,rep("C",9))
-          rho_estim(data[[1]], data[[2]])
+M <- diag_block_matrix(c(3,4,5),c(0.7,0.8,0.2))
+data <- CopulaSim(50,M,c("qnorm(0,1)","qexp(0.5)","qbinom(4,0.8)"),c(6,4,2),random=FALSE)[[1]]
+rho_estim(data,c(rep("C",10),rep("D",2)))
 
 }

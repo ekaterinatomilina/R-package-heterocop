@@ -4,37 +4,28 @@
 \alias{cor_network_graph}
 \title{cor_network_graph}
 \usage{
-cor_network_graph(
-  data,
-  Type,
-  TS,
-  parallel = TRUE,
-  Weighted = FALSE,
-  color,
-  legend
-)
+cor_network_graph(data, R, TS, binary = TRUE, legend)
 }
 \arguments{
-\item{data}{the dataset containing d variables (columns) on n observations}
+\item{R}{a correlation matrix of size dxd}
 
-\item{Type}{a vector containing the type of each variable or the group it belongs to}
+\item{TS}{a threshold for the coefficients of the correlation matrix}
 
-\item{TS}{scalar, defined the threshold at which the random variables are considered as being correlated}
+\item{binary}{a boolean specifying whether the coefficients should be binarized, TRUE by defaut. If FALSE, the edge width is proportional to the values of coefficients.}
 
-\item{Weighted}{boolean, if TRUE, edges will be weighted (the smaller the estimated coefficient the longer the edge). (Default to FALSE)}
+\item{legend}{a vector containing the type of each variable used to color the vertices}
 
-\item{color}{a vector containing colors for the vertices}
-
-\item{legend}{a vector containing the legend}
+\item{n}{the number of observations}
 }
 \value{
-a graph where the vertices are correlations and the edges are random variables.
+a graph representing the correlations between the variables
 }
 \description{
-Create a correlation network for heterogeneous data
+This function enables the user to plot the graph corresponding to the correlations of the Gaussian copula
 }
 \examples{
-data = CopulaSim(100, c(3,2,4), c(0.5,0.8,0.3), list(function(p){qexp(p=p, rate=1)}, function(p){qnorm(p=p, mean=0, sd=1)}, function(p){qnorm(p=p, mean=0.76, sd=2)}), c(5,2,2), random = TRUE,vartype=rep("C",9))
-cor_network_graph(data[[1]],data[[2]],0.3, TRUE)
+R <- diag_block_matrix(c(3,4,5),c(0.7,0.8,0.2))
+data <- CopulaSim(20,R,c("qnorm(0,1)","qexp(0.5)","qbinom(4,0.8)"),c(6,4,2),random=FALSE)[[1]]
+cor_network_graph(data,R,TS=0.3,binary=TRUE,legend=c(rep("Normal",6),rep("Exponential",4),rep("Binomial",2)))
 
 }

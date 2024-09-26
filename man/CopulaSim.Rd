@@ -4,31 +4,27 @@
 \alias{CopulaSim}
 \title{CopulaSim}
 \usage{
-CopulaSim(n, R, list_qlaws, repetition, random = FALSE, vartype)
+CopulaSim(n, R, qdist, rep, random = FALSE)
 }
 \arguments{
-\item{n}{Integer corresponding to the number of observations.}
+\item{n}{the number of observations}
 
-\item{list_qlaws}{List, list of  quasi-inverse functions (must be chosen among (qbeta, qbinom, qchisq, qubif, qexp, qf, qgamma, qgeom, qhyper, qnbinom, qnorm, qpois, qt, qweibull)) with their specified parameters}
+\item{R}{a correlation matrix of size dxd}
 
-\item{repetition}{vector, number of variables following each law}
+\item{qdist}{a list containing the marginal quantile functions}
 
-\item{random}{if TRUE the probability distributions will be randomly distributed among the variables, if FALSE their order will be preserved. (by default : random = TRUE)}
+\item{rep}{a vector containing the number of replicates of each distribution}
 
-\item{vartype}{a vector containing the letters "C" (continuous) and "D"(discrete) denoting the type of each variable, in order}
-
-\item{blocks}{vector which contains the size of the blocks on the diagonal of the matrix}
-
-\item{coeff}{vector of coefficients associated to each block (there is no need to mention the "1" coefficient for one dimensional blocks)}
+\item{random}{a boolean defining whether the correlation matrix should be shuffled}
 }
 \value{
-a list containing a matrix of d vectors (in columns) of length n such that the joint distribution function of those vectors is given  by F(.,.) = C(F_1(.),..., F_d(.)) where C is the gaussian Copula related to a block diagonal matrix and F_1,.., F_d are respectively the distribution functions of the margins, and a vector containing the re-ordered variable types
+a list containing an nxd data frame, the shuffled correlation matrix R, and the shuffling order
 }
 \description{
-This function enables the user to simulate a dataset of n observations by d variables which cumulative distribution function corresponds to a Gaussian copula. The simulation is done via the generalized inverse method.
+This function enables the user to simulate data which joint cumulative distribution function can be expressed as a Gaussian copula
 }
 \examples{
-M <- diag_block_matrix(c(3,2,4), c(0.2,0.1,0.5))
-CopulaSim(100, M, list(function(p){qexp(p=p, rate=1)}, function(p){qnorm(p=p, mean=0, sd=1)}, function(p){qnorm(p=p, mean=0.76, sd=2)}), c(3,4,2), random = TRUE)
+M <- diag_block_matrix(c(3,4,5),c(0.7,0.8,0.2))
+CopulaSim(20,M,c("qnorm(0,1)","qexp(0.5)","qbinom(4,0.8)"),c(6,4,2),random=TRUE)
 
 }

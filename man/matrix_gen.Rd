@@ -7,16 +7,17 @@
 matrix_gen(d, gamma)
 }
 \arguments{
-\item{d}{the number of columns/rows of the matrix}
+\item{d}{the number of variables}
 
-\item{gamma}{initial sparsity parameter}
+\item{gamma}{an initial sparsity parameter for the L matrices in the Cholesky decomposition, must be between 0 and 1}
 }
 \value{
-a list containing the generated matrix and its new sparsity parameter (ie the proportion of zeros)
+a list containing the generated correlation matrix R and its final sparsity parameter (ie the proportion of zeros)
 }
 \description{
-This function enables the user to generate a positive semi-definite sparse matrix of size d x d and with initial sparsity parameter gamma.
+This function enables the user to generate a sparse, semi-positive definite correlation matrix via the Cholesky decomposition
 }
 \examples{
-matrix_gen(30,0.2)
+matrix_gen(15,0.81)
+
 }
