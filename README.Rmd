@@ -17,23 +17,23 @@ knitr::opts_chunk$set(
 )
 ```
 
-This package enables the user to quantify dependencies between mixed (continuous, discrete, binary) variables in the framework of a Gaussian copula model by estimating the correlation matrix of the copula. It has been presented in the article "Mixed copula-based models for semi-parametric network inference: an application to multi-omics data" (@tmj).
+This package enables the user to quantify dependencies between mixed (continuous, discrete, binary) variables in the framework of a Gaussian copula model by estimating the correlation matrix of the copula (@tmj).
 
 ## Context
 
-When working with $d$ heterogeneous vectors $X_1, ..., X_d$, it can be complicated to infer a correlation network as well-known statistical methods do not work in case of mixed data. Indeed, most classical network inference methods such as gLasso or Gaussian graphical models rely on the assumption that the data follow a Gaussian distribution. Recently, the Non-paranormal distribution was introduced for network inference for continuous, non-Gaussian data (@liu). It consists in a transformation of the cumulative distribution functions via a Gaussian copula and provides results in the continuous case. We propose an extension of this model to the case of mixed variables.
+When working with $d$ mixed variables $X_1, ..., X_d$, it can be complicated to infer a correlation network as well-known statistical methods do not work in case of mixed data. Indeed, most classical network inference methods such as gLasso or Gaussian graphical models rely on the assumption that the data follow a Gaussian distribution. Recently, the Non-paranormal distribution was introduced for network inference for continuous, non-Gaussian data (@liu). It consists in a transformation of the cumulative distribution functions via a Gaussian copula and provides results for non-Gaussian but continuous variables. We propose an extension of this model to the case of mixed variables.
 
 ## The Model
 
-Let $X_1, ..., X_d$ be $d$ $n-$dimensional vectors of any type (continuous, mixed, discrete...). Let $F_1, ..., F_d$ denote their marginal CDFs, $\Phi^{-1}$ the inverse of the standard normal CDF and $\Phi_\Sigma$ the Gaussian CDF of correlation matrix $\Sigma$. We define the Gaussian copula in the following way:
-$$F(X_1, ..., X_d)=C_\Sigma(F_1(X_1), ..., F_d(X_d)):=\Phi_\Sigma(\Phi^{-1}(F_1(X_1)), ..., \Phi^{-1}(F_d(X_d)))$$
+Let $X_1, ..., X_d$ be mixed variables (continuous or discrete). Let $F_1, ..., F_d$ denote their marginal CDFs, $\Phi^{-1}$ the inverse of the standard normal CDF and $\Phi_\Sigma$ the Gaussian CDF of correlation matrix $\Sigma$. We assume that the multivariate CDF of the vector $(X_1,\dots,X_d)$ is given by:
+$$F(X_1, ..., X_d)=C_\Sigma(F_1(X_1), ..., F_d(X_d)):=\Phi_\Sigma(\Phi^{-1}(F_1(X_1)), ..., \Phi^{-1}(F_d(X_d))).$$
 
 # Estimation
 ```{r,include=FALSE}
 library(heterocop)
 library(dplyr)
 ```
-In order to estimate the correlation matrix of the copula, the rho_estim function uses the pairwise maximum likelihood estimator (@mazo). It returns the estimated correlation matrix of the copula and takes as arguments the data set and the variable types in a vector. In the example below, we have used a subset of the ICGC data set (@ICGC) which contains 5 RNA-seq, 5 protein and 5 mutation variables. We have specified the variable types, where a "C" stands for "continuous" and a "D" for "discrete".
+In order to estimate the correlation matrix of the copula, the rho_estim function uses a semiparametric pairwise maximum likelihood estimator. It returns the estimated correlation matrix of the copula and takes as arguments the data set and the variable types in a vector. In the example below, we have used a subset of the ICGC data set (@ICGC) which contains 5 RNA-seq, 5 protein and 5 mutation variables. We have specified the variable types, where a "C" stands for "continuous" and a "D" for "discrete".
 ```{r,warning=FALSE,message=FALSE}
 data(icgc_data)
 R <- rho_estim(icgc_data,c(rep("C",10),rep("D",5)))

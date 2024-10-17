@@ -1,11 +1,11 @@
 #' matrix_gen
 #' 
-#' @description This function enables the user to generate a sparse, semi-positive definite correlation matrix via the Cholesky decomposition
+#' @description This function enables the user to generate a sparse, nonnegative definite correlation matrix via the Cholesky decomposition
 #' 
 #' @param d the number of variables
-#' @param gamma an initial sparsity parameter for the L matrices in the Cholesky decomposition, must be between 0 and 1
+#' @param gamma an initial sparsity parameter for the lower triangular matrices in the Cholesky decomposition, must be between 0 and 1
 #'
-#' @return a list containing the generated correlation matrix R and its final sparsity parameter (ie the proportion of zeros)
+#' @return a list containing the generated correlation matrix and its final sparsity parameter (ie the proportion of zeros)
 #' @examples
 #' matrix_gen(15,0.81)
 #' 
@@ -101,13 +101,13 @@ gauss_gen <- function(R, n){
 
 #' CopulaSim
 #' 
-#' @description This function enables the user to simulate data which joint cumulative distribution function can be expressed as a Gaussian copula
+#' @description This function enables the user to simulate data from a Gaussian copula and arbitrary marginal quantile functions
 #' 
 #' @param n the number of observations
 #' @param R a correlation matrix of size dxd
-#' @param qdist a list containing the marginal quantile functions
+#' @param qdist a vector containing the names of the marginal quantile functions
 #' @param rep a vector containing the number of replicates of each distribution
-#' @param random a boolean defining whether the correlation matrix should be shuffled
+#' @param random a boolean defining whether the order of the marginals should be randomized
 #' 
 #' @return a list containing an nxd data frame, the shuffled correlation matrix R, and the shuffling order
 #'
@@ -221,70 +221,72 @@ L_n_CD <- function(theta, F1, F2m, F2p){
 #' @export
 
 rho_estim <- function(data,Type,parallel=TRUE){
-  
-  F = fdr_d(data, Type)
-  M_rho = diag(length(Type))
-  
-  if(parallel==FALSE){
-  
-  for (i in 1:(length(Type)-1)){
-    for (j in (i+1):length(Type)){
-      if (Type[i] == "C" & Type[j] == "C"){
-        rho_ij <- optimize(L_n_CC, c(-1,1), F1 = F[,i,2], F2 = F[,j,2], maximum = FALSE)$minimum
-      }
-      if(Type[i] == "C" & Type[j] == "D"){
-        rho_ij <- optimize(L_n_CD, c(-1,1), F1 = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
-      }
-      if(Type[j] == "C" & Type[i] == "D"){
-        rho_ij <- optimize(L_n_CD, c(-1,1), F1 = F[,j,2], F2m = F[,i,1], F2p = F[,i,2],maximum = FALSE)$minimum
-      }
-      if(Type[j] == "D" & Type[i] == "D"){
-        rho_ij <- optimize(L_n_DD, c(-1,1), F1m = F[,i,1], F1p = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
-      }
-      M_rho[i,j] = rho_ij
-      M_rho[j,i] = rho_ij
+    
+    F = fdr_d(data, Type)
+    M_rho = diag(length(Type))
+    
+    if(parallel==FALSE){
+        
+        for (i in 1:(length(Type)-1)){
+            for (j in (i+1):length(Type)){
+                if (Type[i] == "C" & Type[j] == "C"){
+                    rho_ij <- optimize(L_n_CC, c(-1,1), F1 = F[,i,2], F2 = F[,j,2], maximum = FALSE)$minimum
+                }
+                if(Type[i] == "C" & Type[j] == "D"){
+                    rho_ij <- optimize(L_n_CD, c(-1,1), F1 = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
+                }
+                if(Type[j] == "C" & Type[i] == "D"){
+                    rho_ij <- optimize(L_n_CD, c(-1,1), F1 = F[,j,2], F2m = F[,i,1], F2p = F[,i,2],maximum = FALSE)$minimum
+                }
+                if(Type[j] == "D" & Type[i] == "D"){
+                    rho_ij <- optimize(L_n_DD, c(-1,1), F1m = F[,i,1], F1p = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
+                }
+                M_rho[i,j] = rho_ij
+                M_rho[j,i] = rho_ij
+            }
+        }
+        rownames(M_rho) <- colnames(data)
+        colnames(M_rho) <- rownames(M_rho)
+        return(M_rho)
+    }else{
+        Ncpus <- parallel::detectCores() - 1
+        cl <- parallel::makeCluster(Ncpus, outfile="")
+        doParallel::registerDoParallel(cl)
+        M_rho <- foreach::foreach(i=1:(length(Type)-1), .combine='rbind',.export=c("c_R_2D", "C_R_2D","L_n_CC", "L_n_CD","L_n_DD"))%dopar%{
+            rho_i <- c(rep(0,i-1),1) 
+            for (j in (i+1):length(Type)){
+                if (Type[i] == "C" & Type[j] == "C"){
+                    rho_ij <- optimize(L_n_CC, c(-1,1), F1 = F[,i,2], F2 = F[,j,2], maximum = FALSE)$minimum
+                }
+                if(Type[i] == "C" & Type[j] == "D"){
+                    rho_ij <- optimize(L_n_CD, c(-1,1), F1 = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
+                }
+                if(Type[j] == "C" & Type[i] == "D"){
+                    rho_ij <- optimize(L_n_CD, c(-1,1), F1 = F[,j,2], F2m = F[,i,1], F2p = F[,i,2],maximum = FALSE)$minimum
+                }
+                if(Type[j] == "D" & Type[i] == "D"){
+                    rho_ij <- optimize(L_n_DD, c(-1,1), F1m = F[,i,1], F1p = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
+                }
+                rho_i <- c(rho_i, rho_ij)
+            }
+            return(rho_i)
+        }
+        M_rho <- rbind(M_rho, c(rep(0,length(Type)-1),1))
+        parallel::stopCluster(cl)
+        M_rho <- M_rho + t(M_rho)-diag(1,length(Type),length(Type))
+        rownames(M_rho) <- colnames(data)
+        colnames(M_rho) <- rownames(M_rho)
+        return(M_rho)
     }
-  }
-  return(M_rho)
-}else{
-  Ncpus <- parallel::detectCores() - 1
-  cl <- parallel::makeCluster(Ncpus, outfile="")
-  doParallel::registerDoParallel(cl)
-M_rho <- foreach::foreach(i=1:(length(Type)-1), .combine='rbind',.export=c("c_R_2D", "C_R_2D","L_n_CC", "L_n_CD","L_n_DD"))%dopar%{
-    rho_i <- c(rep(0,i-1),1) 
-    for (j in (i+1):length(Type)){
-      if (Type[i] == "C" & Type[j] == "C"){
-        rho_ij <- optimize(L_n_CC, c(-1,1), F1 = F[,i,2], F2 = F[,j,2], maximum = FALSE)$minimum
-      }
-      if(Type[i] == "C" & Type[j] == "D"){
-        rho_ij <- optimize(L_n_CD, c(-1,1), F1 = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
-      }
-      if(Type[j] == "C" & Type[i] == "D"){
-        rho_ij <- optimize(L_n_CD, c(-1,1), F1 = F[,j,2], F2m = F[,i,1], F2p = F[,i,2],maximum = FALSE)$minimum
-      }
-      if(Type[j] == "D" & Type[i] == "D"){
-        rho_ij <- optimize(L_n_DD, c(-1,1), F1m = F[,i,1], F1p = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
-      }
-      rho_i <- c(rho_i, rho_ij)
-    }
-      return(rho_i)
-}
-    M_rho <- rbind(M_rho, c(rep(0,length(Type)-1),1))
-    parallel::stopCluster(cl)
-    M_rho <- M_rho + t(M_rho)-diag(1,length(Type),length(Type))
-    rownames(M_rho) <- colnames(data)
-    colnames(M_rho) <- rownames(M_rho)
-    return(M_rho)
-}
 }
 
 #' matrix_cor_ts
 #' 
 #' @description This function enables the user to threshold matrix coefficients
 #' 
-#' @param M_est a correlation matrix
+#' @param R a correlation matrix
 #' @param TS a threshold
-#' @param binary a boolean specifying whether the coefficients should be binarized, TRUE by defaut
+#' @param binary a boolean specifying whether the coefficients should be binarized, TRUE by defaut (zero if the coefficient is less than the threshold in absolute value, 1 otherwise)
 #' 
 #' @return the thresholded input matrix
 #' 
@@ -294,8 +296,8 @@ M_rho <- foreach::foreach(i=1:(length(Type)-1), .combine='rbind',.export=c("c_R_
 #' 
 #' @export
 
-matrix_cor_ts <- function(M_est, TS, binary = TRUE){
-  M_ = M_est
+matrix_cor_ts <- function(R, TS, binary = TRUE){
+  M_ = R
   M_[which(M_ <= TS)] = 0
   if(binary==TRUE){
   M_[which(M_ != 0)] = 1
@@ -307,13 +309,12 @@ matrix_cor_ts <- function(M_est, TS, binary = TRUE){
 #' 
 #' @description This function enables the user to plot the graph corresponding to the correlations of the Gaussian copula
 #' 
-#' @param n the number of observations
-#' @param R a correlation matrix of size dxd
-#' @param TS a threshold for the coefficients of the correlation matrix
-#' @param binary a boolean specifying whether the coefficients should be binarized, TRUE by defaut. If FALSE, the edge width is proportional to the values of coefficients.
+#' @param R a correlation matrix of size dxd (d is the number of variables)
+#' @param TS a threshold for the absolute values of the correlation matrix coefficients
+#' @param binary a boolean specifying whether the coefficients should be binarized, TRUE by defaut (zero if the coefficient is less than the threshold in absolute value, 1 otherwise). If FALSE, the edge width is proportional to the coefficient value.
 #' @param legend a vector containing the type of each variable used to color the vertices
 #' 
-#' @return a graph representing the correlations between the variables
+#' @return a graph representing the correlations between the latent Gaussian variables
 #'
 #' @examples
 #' R <- diag_block_matrix(c(3,4,5),c(0.7,0.8,0.2))
@@ -322,7 +323,7 @@ matrix_cor_ts <- function(M_est, TS, binary = TRUE){
 #' 
 #' @export
 
-cor_network_graph <- function(data, R, TS, binary = TRUE, legend){
+cor_network_graph <- function(R, TS, binary = TRUE, legend){
   legend <- factor(legend,levels=unique(legend))
   network_ref <- igraph::graph_from_adjacency_matrix(matrix_cor_ts(R, TS, binary),mode="undirected", diag=F, weighted=TRUE)
   colors <- hcl.colors(length(unique(legend)),palette="PinkYl")
@@ -330,7 +331,7 @@ cor_network_graph <- function(data, R, TS, binary = TRUE, legend){
   plot(network_ref,
        edge.width = igraph::E(network_ref)$weight,
        vertex.size=8,
-       vertex.label = colnames(data),
+       vertex.label = colnames(R),
        vertex.color= colors[legend],
        vertex.label.cex=0.8,
        vertex.label.color="black",
