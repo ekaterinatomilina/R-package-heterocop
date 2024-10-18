@@ -14,13 +14,13 @@
 matrix_gen <- function(d,gamma){
   if(gamma >= 0 & gamma <=1){
     L <- matrix(0,d,d)
-    params <- runif(d*(d-1)/2,0.3,1)
+    params <- stats::runif(d*(d-1)/2,0.3,1)
     ind <- sample(1:(d*(d-1)/2),floor(gamma*d*(d-1)/2))
     params[ind] <- 0
     L[lower.tri(L)] <- params
     diag(L) <- 1
     R <- L%*%t(L)
-    C <- round(cov2cor(R),3)
+    C <- round(stats::cov2cor(R),3)
     gamma_f = sum(C==0)/(d*d)
     return(list(as.matrix(C),paste0("sparsity = ",gamma_f)))
     }
@@ -86,8 +86,8 @@ gauss_gen <- function(R, n){
     if(matrixcalc::is.positive.semi.definite(R)){ # checking that the matrix is semi-positive definite
       d = dim(R)[1]
       A = as.matrix(eigen(R)$vectors%*%diag(sqrt(eigen(R)$values)))
-      z = matrix(rnorm(d*n, mean = 0, sd = 1), ncol=n)
-      data <- data.frame(t(pnorm(A%*%z)))
+      z = matrix(stats::rnorm(d*n, mean = 0, sd = 1), ncol=n)
+      data <- data.frame(t(stats::pnorm(A%*%z)))
       return(data)
       }
     else{
@@ -105,26 +105,25 @@ gauss_gen <- function(R, n){
 #' 
 #' @param n the number of observations
 #' @param R a correlation matrix of size dxd
-#' @param qdist a vector containing the names of the marginal quantile functions
-#' @param rep a vector containing the number of replicates of each distribution
+#' @param qdist a vector containing the names of the marginal quantile functions as well as the number of times they are present in the dataset
 #' @param random a boolean defining whether the order of the marginals should be randomized
 #' 
 #' @return a list containing an nxd data frame, the shuffled correlation matrix R, and the shuffling order
 #'
 #' @examples
 #' M <- diag_block_matrix(c(3,4,5),c(0.7,0.8,0.2))
-#' CopulaSim(20,M,c("qnorm(0,1)","qexp(0.5)","qbinom(4,0.8)"),c(6,4,2),random=TRUE)
+#' CopulaSim(20,M,c(rep("qnorm(0,1)",6),rep("qexp(0.5)",4),rep("qbinom(4,0.8)",2)),random=TRUE)
 #' 
 #' @export
 
-CopulaSim <- function(n, R, qdist, rep, random = FALSE){
+CopulaSim <- function(n, R, qdist, random = FALSE){
   if(!matrixcalc::is.positive.semi.definite(R)){
     stop("The correlation matrix must be semi-positive definite.")
   }else if(!(sum(R>1 | R< -1)==0)){
     stop("The correlation coefficients must be between -1 and 1")
-  }else if(dim(R)[1]==sum(rep)){
+  }else if(dim(R)[1]==length(qdist)){
     
-    d = sum(rep)
+    d = length(qdist)
     order <- 1:d
     
     if(random==TRUE){
@@ -134,15 +133,9 @@ CopulaSim <- function(n, R, qdist, rep, random = FALSE){
     
     XY = gauss_gen(R,n)
     
-    nb = c()
-    for (l in 1:length(rep)){
-      nb = append(nb, rep(l,rep[l]))
-    }
-    
     vars = matrix(0,n,d)
     for (j in 1:d){
-      i = nb[j]
-      expr <- stringr::str_split_1(qdist[i],"\\(")
+      expr <- stringr::str_split_1(qdist[j],"\\(")
       vars[,j] = eval(parse(text=paste0(expr[1],"(XY[,j],",expr[2])))
     }
     vars <- data.frame(vars)
@@ -172,10 +165,10 @@ fdr_d <- function(X, Type){
   return(F)
 }
 
-c_R_2D <- function(x1, x2, rho) + return(exp(-0.5*((rho**2)*(qnorm(x1,0,1)**2+qnorm(x2,0,1)**2)-2*rho*qnorm(x1,0,1)*qnorm(x2,0,1))/(1-rho**2))/sqrt(1-(rho**2)))
+c_R_2D <- function(x1, x2, rho) + return(exp(-0.5*((rho**2)*(stats::qnorm(x1,0,1)**2+stats::qnorm(x2,0,1)**2)-2*rho*stats::qnorm(x1,0,1)*stats::qnorm(x2,0,1))/(1-rho**2))/sqrt(1-(rho**2)))
 
 C_R_2D<- function(u1, u2, l1, l2, R){
-  return(mvtnorm::pmvnorm(upper=c(qnorm(u1,0,1), qnorm(u2,0,1)),mean=c(0,0),lower=c(qnorm(l1,0,1), qnorm(l2,0,1)),corr = R, sigma=NULL, algorithm = mvtnorm::GenzBretz(), keepAttr=FALSE))
+  return(mvtnorm::pmvnorm(upper=c(stats::qnorm(u1,0,1), stats::qnorm(u2,0,1)),mean=c(0,0),lower=c(stats::qnorm(l1,0,1), stats::qnorm(l2,0,1)),corr = R, sigma=NULL, algorithm = mvtnorm::GenzBretz(), keepAttr=FALSE))
 }
 
 
@@ -197,7 +190,7 @@ L_n_DD <- function(theta, F1m, F1p, F2m, F2p){
 
 L_n_CD <- function(theta, F1, F2m, F2p){
   delta=10**-9
-  mysummands <- pnorm(qnorm(F2p),mean=theta*qnorm(F1),sd=sqrt(1-theta**2)) - pnorm(qnorm(F2m),mean=theta*qnorm(F1),sd=sqrt(1-theta**2))
+  mysummands <- stats::pnorm(stats::qnorm(F2p),mean=theta*stats::qnorm(F1),sd=sqrt(1-theta**2)) - stats::pnorm(stats::qnorm(F2m),mean=theta*stats::qnorm(F1),sd=sqrt(1-theta**2))
   L <-sum(log(mapply(max,mysummands,MoreArgs=list(delta))))
   return(-L)
 }
@@ -215,7 +208,7 @@ L_n_CD <- function(theta, F1, F2m, F2p){
 #'
 #' @examples
 #' M <- diag_block_matrix(c(3,4,5),c(0.7,0.8,0.2))
-#' data <- CopulaSim(50,M,c("qnorm(0,1)","qexp(0.5)","qbinom(4,0.8)"),c(6,4,2),random=FALSE)[[1]]
+#' data <- CopulaSim(20,M,c(rep("qnorm(0,1)",6),rep("qexp(0.5)",4),rep("qbinom(4,0.8)",2)),random=FALSE)[[1]]
 #' rho_estim(data,c(rep("C",10),rep("D",2)))
 #' 
 #' @export
@@ -230,16 +223,16 @@ rho_estim <- function(data,Type,parallel=TRUE){
         for (i in 1:(length(Type)-1)){
             for (j in (i+1):length(Type)){
                 if (Type[i] == "C" & Type[j] == "C"){
-                    rho_ij <- optimize(L_n_CC, c(-1,1), F1 = F[,i,2], F2 = F[,j,2], maximum = FALSE)$minimum
+                    rho_ij <- stats::optimize(L_n_CC, c(-1,1), F1 = F[,i,2], F2 = F[,j,2], maximum = FALSE)$minimum
                 }
                 if(Type[i] == "C" & Type[j] == "D"){
-                    rho_ij <- optimize(L_n_CD, c(-1,1), F1 = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
+                    rho_ij <- stats::optimize(L_n_CD, c(-1,1), F1 = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
                 }
                 if(Type[j] == "C" & Type[i] == "D"){
-                    rho_ij <- optimize(L_n_CD, c(-1,1), F1 = F[,j,2], F2m = F[,i,1], F2p = F[,i,2],maximum = FALSE)$minimum
+                    rho_ij <- stats::optimize(L_n_CD, c(-1,1), F1 = F[,j,2], F2m = F[,i,1], F2p = F[,i,2],maximum = FALSE)$minimum
                 }
                 if(Type[j] == "D" & Type[i] == "D"){
-                    rho_ij <- optimize(L_n_DD, c(-1,1), F1m = F[,i,1], F1p = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
+                    rho_ij <- stats::optimize(L_n_DD, c(-1,1), F1m = F[,i,1], F1p = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
                 }
                 M_rho[i,j] = rho_ij
                 M_rho[j,i] = rho_ij
@@ -249,23 +242,28 @@ rho_estim <- function(data,Type,parallel=TRUE){
         colnames(M_rho) <- rownames(M_rho)
         return(M_rho)
     }else{
-        Ncpus <- parallel::detectCores() - 1
+      chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
+      if (nzchar(chk) && chk == "TRUE") {
+        Ncpus <- 2
+      } else {
+        Ncpus <- parallel::detectCores()-1
+      }
         cl <- parallel::makeCluster(Ncpus, outfile="")
         doParallel::registerDoParallel(cl)
         M_rho <- foreach::foreach(i=1:(length(Type)-1), .combine='rbind',.export=c("c_R_2D", "C_R_2D","L_n_CC", "L_n_CD","L_n_DD"))%dopar%{
             rho_i <- c(rep(0,i-1),1) 
             for (j in (i+1):length(Type)){
                 if (Type[i] == "C" & Type[j] == "C"){
-                    rho_ij <- optimize(L_n_CC, c(-1,1), F1 = F[,i,2], F2 = F[,j,2], maximum = FALSE)$minimum
+                    rho_ij <- stats::optimize(L_n_CC, c(-1,1), F1 = F[,i,2], F2 = F[,j,2], maximum = FALSE)$minimum
                 }
                 if(Type[i] == "C" & Type[j] == "D"){
-                    rho_ij <- optimize(L_n_CD, c(-1,1), F1 = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
+                    rho_ij <- stats::optimize(L_n_CD, c(-1,1), F1 = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
                 }
                 if(Type[j] == "C" & Type[i] == "D"){
-                    rho_ij <- optimize(L_n_CD, c(-1,1), F1 = F[,j,2], F2m = F[,i,1], F2p = F[,i,2],maximum = FALSE)$minimum
+                    rho_ij <- stats::optimize(L_n_CD, c(-1,1), F1 = F[,j,2], F2m = F[,i,1], F2p = F[,i,2],maximum = FALSE)$minimum
                 }
                 if(Type[j] == "D" & Type[i] == "D"){
-                    rho_ij <- optimize(L_n_DD, c(-1,1), F1m = F[,i,1], F1p = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
+                    rho_ij <- stats::optimize(L_n_DD, c(-1,1), F1m = F[,i,1], F1p = F[,i,2], F2m = F[,j,1], F2p = F[,j,2],maximum = FALSE)$minimum
                 }
                 rho_i <- c(rho_i, rho_ij)
             }
@@ -298,7 +296,7 @@ rho_estim <- function(data,Type,parallel=TRUE){
 
 matrix_cor_ts <- function(R, TS, binary = TRUE){
   M_ = R
-  M_[which(M_ <= TS)] = 0
+  M_[which(abs(M_) <= TS)] = 0
   if(binary==TRUE){
   M_[which(M_ != 0)] = 1
   }
@@ -318,16 +316,16 @@ matrix_cor_ts <- function(R, TS, binary = TRUE){
 #'
 #' @examples
 #' R <- diag_block_matrix(c(3,4,5),c(0.7,0.8,0.2))
-#' data <- CopulaSim(20,R,c("qnorm(0,1)","qexp(0.5)","qbinom(4,0.8)"),c(6,4,2),random=FALSE)[[1]]
-#' cor_network_graph(data,R,TS=0.3,binary=TRUE,legend=c(rep("Normal",6),rep("Exponential",4),rep("Binomial",2)))
+#' data <- CopulaSim(20,R,c(rep("qnorm(0,1)",6),rep("qexp(0.5)",4),rep("qbinom(4,0.8)",2)),random=FALSE)[[1]]
+#' cor_network_graph(R,TS=0.3,binary=TRUE,legend=c(rep("Normal",6),rep("Exponential",4),rep("Binomial",2)))
 #' 
 #' @export
 
 cor_network_graph <- function(R, TS, binary = TRUE, legend){
   legend <- factor(legend,levels=unique(legend))
   network_ref <- igraph::graph_from_adjacency_matrix(matrix_cor_ts(R, TS, binary),mode="undirected", diag=F, weighted=TRUE)
-  colors <- hcl.colors(length(unique(legend)),palette="PinkYl")
-  par(bg="white", mar=c(1,1,1,1))
+  colors <- grDevices::hcl.colors(length(unique(legend)),palette="PinkYl")
+  graphics::par(bg="white", mar=c(1,1,1,1))
   plot(network_ref,
        edge.width = igraph::E(network_ref)$weight,
        vertex.size=8,
@@ -338,8 +336,17 @@ cor_network_graph <- function(R, TS, binary = TRUE, legend){
        vertex.frame.color="black",
        edge.color = "black")
   legend(1.2,0.8,cex=0.6, unique(legend),fill=colors)
-  text(1.1,1, stringr::str_glue("threshold = ",TS) ,col="black", cex=1)
+  graphics::text(1.1,1, stringr::str_glue("threshold = ",TS) ,col="black", cex=1)
 }
 
-
-
+#' ICGC dataset
+#'
+#' Dataset containing RNA counts, protein expression and mutations measured on breast cancer tumors.
+#'
+#' @format A dataframe of 15 variables and 250 observations containing the following:
+#' \describe{
+#'   \item{ACACA, AKT1S1, ANLN,ANXA1,AR}{RNA counts (discrete)}
+#'   \item{ACACA_P, AKT1S1_P, ANLN_P,ANXA_P,AR_P}{protein expression measurements (discrete) }
+#'   \item{MU5219,MU4468,MU7870,MU4842,MU6962}{5 mutations (binary)}
+#' }
+"icgc_data"

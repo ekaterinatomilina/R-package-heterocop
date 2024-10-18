@@ -6,10 +6,23 @@ Author: Julie Cartier, Florence Jaffrezic, Gildas Mazo, Ekaterina Tomilina
 Maintainer: Ekaterina Tomilina <ekaterina.tomilina@inrae.fr>
 Description: This package generates random vectors which are linked by a Gaussian copula. It can also estimate the correlation matrix of the Gaussian copula in order to identify independencies within the data.
 Imports:
-  mvtnorm, stats, igraph, copula, matrixcalc, doParallel
+    mvtnorm,
+    stats,
+    igraph,
+    matrixcalc,
+    doParallel,
+    graphics,
+    foreach,
+    stringr
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)
+Suggests: 
+    knitr,
+    rmarkdown,
+    kableExtra,
+    dplyr
+VignetteBuilder: knitr

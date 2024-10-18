@@ -21,7 +21,7 @@ This function enables the user to estimate the correlation matrix of the Gaussia
 }
 \examples{
 M <- diag_block_matrix(c(3,4,5),c(0.7,0.8,0.2))
-data <- CopulaSim(50,M,c("qnorm(0,1)","qexp(0.5)","qbinom(4,0.8)"),c(6,4,2),random=FALSE)[[1]]
+data <- CopulaSim(20,M,c(rep("qnorm(0,1)",6),rep("qexp(0.5)",4),rep("qbinom(4,0.8)",2)),random=FALSE)[[1]]
 rho_estim(data,c(rep("C",10),rep("D",2)))
 
 }

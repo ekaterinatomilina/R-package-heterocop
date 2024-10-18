@@ -9,13 +9,13 @@ matrix_gen(d, gamma)
 \arguments{
 \item{d}{the number of variables}
 
-\item{gamma}{an initial sparsity parameter for the L matrices in the Cholesky decomposition, must be between 0 and 1}
+\item{gamma}{an initial sparsity parameter for the lower triangular matrices in the Cholesky decomposition, must be between 0 and 1}
 }
 \value{
-a list containing the generated correlation matrix R and its final sparsity parameter (ie the proportion of zeros)
+a list containing the generated correlation matrix and its final sparsity parameter (ie the proportion of zeros)
 }
 \description{
-This function enables the user to generate a sparse, semi-positive definite correlation matrix via the Cholesky decomposition
+This function enables the user to generate a sparse, nonnegative definite correlation matrix via the Cholesky decomposition
 }
 \examples{
 matrix_gen(15,0.81)

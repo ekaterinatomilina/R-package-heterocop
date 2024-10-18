@@ -4,14 +4,14 @@
 \alias{matrix_cor_ts}
 \title{matrix_cor_ts}
 \usage{
-matrix_cor_ts(M_est, TS, binary = TRUE)
+matrix_cor_ts(R, TS, binary = TRUE)
 }
 \arguments{
-\item{M_est}{a correlation matrix}
+\item{R}{a correlation matrix}
 
 \item{TS}{a threshold}
 
-\item{binary}{a boolean specifying whether the coefficients should be binarized, TRUE by defaut}
+\item{binary}{a boolean specifying whether the coefficients should be binarized, TRUE by defaut (zero if the coefficient is less than the threshold in absolute value, 1 otherwise)}
 }
 \value{
 the thresholded input matrix

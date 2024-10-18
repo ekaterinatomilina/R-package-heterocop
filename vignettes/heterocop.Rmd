@@ -2,20 +2,23 @@
 title: "heterocop: an R package for Gaussian copula semi-parametric inference for mixed data"
 author: "Ekaterina Tomilina"
 date: "`r Sys.Date()`"
-output: github_document
-bibliography: biblio.bib
-always_allow_html: true
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{heterocop}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
+```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+library(heterocop)
+require(dplyr)
+require(kableExtra)
+require(knitr)
 ```
 
 This package enables the user to quantify dependencies between mixed (continuous, discrete, binary) variables in the framework of a Gaussian copula model by estimating the correlation matrix of the copula (@tmj).
@@ -30,12 +33,7 @@ Let $X_1, ..., X_d$ be mixed variables (continuous or discrete). Let $F_1, ..., 
 $$F(X_1, ..., X_d)=C_\Sigma(F_1(X_1), ..., F_d(X_d)):=\Phi_\Sigma(\Phi^{-1}(F_1(X_1)), ..., \Phi^{-1}(F_d(X_d))).$$
 
 # Estimation
-```{r,include=FALSE}
-library(heterocop)
-require(dplyr)
-require(kableExtra)
-require(knitr)
-```
+
 In order to estimate the correlation matrix of the copula, the rho_estim function uses a semiparametric pairwise maximum likelihood estimator. It returns the estimated correlation matrix of the copula and takes as arguments the data set and the variable types in a vector. In the example below, we have used a subset of the ICGC data set (@ICGC) which contains 5 RNA-seq, 5 protein and 5 mutation variables. We have specified the variable types, where a "C" stands for "continuous" and a "D" for "discrete".
 ```{r,warning=FALSE,message=FALSE}
 data(icgc_data)
@@ -46,7 +44,6 @@ A $6\times6$ subset of the obtained copula correlation matrix is represented bel
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
 knitr::kable(head(R[,1:6]), digits = 2) 
 ```
-
 
 # Graphical representation
 
@@ -62,7 +59,6 @@ Our package is also able to simulate data distributed according to the Gaussian 
 ```{r}
 R <- diag_block_matrix(c(3,2),c(0.4,0.8))
 ```
-
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
 knitr::kable(R, digits = 2, col.names = NULL)
 ```
@@ -75,6 +71,7 @@ R <- matrix_gen(5,0.81)
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
 knitr::kable(R, digits = 2, col.names = NULL)
 ```
+
 The CopulaSim function enables the user to generate a data set which CDF can be expressed as a Gaussian copula of correlation matrix R (to be specified). In the example below, we first generate a block diagonal correlation matrix R and then generate the data set. Then, CopulaSim takes as arguments the number of observations, the correlation matrix of the copula, a vector containing the probability distributions and their parameters, the number of repetitions of each distribution, and enables the user to randomize their order. It returns a list of three elements: the data frame containing the generated data, the correlation matrix, and the permutation realized on the rows and columns of R order after randomization.
 
 ```{r}

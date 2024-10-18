@@ -4,28 +4,26 @@
 \alias{cor_network_graph}
 \title{cor_network_graph}
 \usage{
-cor_network_graph(data, R, TS, binary = TRUE, legend)
+cor_network_graph(R, TS, binary = TRUE, legend)
 }
 \arguments{
-\item{R}{a correlation matrix of size dxd}
+\item{R}{a correlation matrix of size dxd (d is the number of variables)}
 
-\item{TS}{a threshold for the coefficients of the correlation matrix}
+\item{TS}{a threshold for the absolute values of the correlation matrix coefficients}
 
-\item{binary}{a boolean specifying whether the coefficients should be binarized, TRUE by defaut. If FALSE, the edge width is proportional to the values of coefficients.}
+\item{binary}{a boolean specifying whether the coefficients should be binarized, TRUE by defaut (zero if the coefficient is less than the threshold in absolute value, 1 otherwise). If FALSE, the edge width is proportional to the coefficient value.}
 
 \item{legend}{a vector containing the type of each variable used to color the vertices}
-
-\item{n}{the number of observations}
 }
 \value{
-a graph representing the correlations between the variables
+a graph representing the correlations between the latent Gaussian variables
 }
 \description{
 This function enables the user to plot the graph corresponding to the correlations of the Gaussian copula
 }
 \examples{
 R <- diag_block_matrix(c(3,4,5),c(0.7,0.8,0.2))
-data <- CopulaSim(20,R,c("qnorm(0,1)","qexp(0.5)","qbinom(4,0.8)"),c(6,4,2),random=FALSE)[[1]]
-cor_network_graph(data,R,TS=0.3,binary=TRUE,legend=c(rep("Normal",6),rep("Exponential",4),rep("Binomial",2)))
+data <- CopulaSim(20,R,c(rep("qnorm(0,1)",6),rep("qexp(0.5)",4),rep("qbinom(4,0.8)",2)),random=FALSE)[[1]]
+cor_network_graph(R,TS=0.3,binary=TRUE,legend=c(rep("Normal",6),rep("Exponential",4),rep("Binomial",2)))
 
 }

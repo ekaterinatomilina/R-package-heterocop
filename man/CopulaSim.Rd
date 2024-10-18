@@ -4,27 +4,25 @@
 \alias{CopulaSim}
 \title{CopulaSim}
 \usage{
-CopulaSim(n, R, qdist, rep, random = FALSE)
+CopulaSim(n, R, qdist, random = FALSE)
 }
 \arguments{
 \item{n}{the number of observations}
 
 \item{R}{a correlation matrix of size dxd}
 
-\item{qdist}{a list containing the marginal quantile functions}
+\item{qdist}{a vector containing the names of the marginal quantile functions as well as the number of times they are present in the dataset}
 
-\item{rep}{a vector containing the number of replicates of each distribution}
-
-\item{random}{a boolean defining whether the correlation matrix should be shuffled}
+\item{random}{a boolean defining whether the order of the marginals should be randomized}
 }
 \value{
 a list containing an nxd data frame, the shuffled correlation matrix R, and the shuffling order
 }
 \description{
-This function enables the user to simulate data which joint cumulative distribution function can be expressed as a Gaussian copula
+This function enables the user to simulate data from a Gaussian copula and arbitrary marginal quantile functions
 }
 \examples{
 M <- diag_block_matrix(c(3,4,5),c(0.7,0.8,0.2))
-CopulaSim(20,M,c("qnorm(0,1)","qexp(0.5)","qbinom(4,0.8)"),c(6,4,2),random=TRUE)
+CopulaSim(20,M,c(rep("qnorm(0,1)",6),rep("qexp(0.5)",4),rep("qbinom(4,0.8)",2)),random=TRUE)
 
 }
