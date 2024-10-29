@@ -13,10 +13,10 @@ CopulaSim(n, R, qdist, random = FALSE)
 
 \item{qdist}{a vector containing the names of the marginal quantile functions as well as the number of times they are present in the dataset}
 
-\item{random}{a boolean defining whether the order of the marginals should be randomized}
+\item{random}{a boolean defining whether the order of the correlation coefficients should be randomized}
 }
 \value{
-a list containing an nxd data frame, the shuffled correlation matrix R, and the shuffling order
+a list containing an nxd data frame, the shuffled correlation matrix R, and the permutation leading to the new correlation matrix
 }
 \description{
 This function enables the user to simulate data from a Gaussian copula and arbitrary marginal quantile functions
