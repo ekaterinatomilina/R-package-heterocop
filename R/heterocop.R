@@ -106,9 +106,9 @@ gauss_gen <- function(R, n){
 #' @param n the number of observations
 #' @param R a correlation matrix of size dxd
 #' @param qdist a vector containing the names of the marginal quantile functions as well as the number of times they are present in the dataset
-#' @param random a boolean defining whether the order of the marginals should be randomized
+#' @param random a boolean defining whether the order of the correlation coefficients should be randomized
 #' 
-#' @return a list containing an nxd data frame, the shuffled correlation matrix R, and the shuffling order
+#' @return a list containing an nxd data frame, the shuffled correlation matrix R, and the permutation leading to the new correlation matrix
 #'
 #' @examples
 #' M <- diag_block_matrix(c(3,4,5),c(0.7,0.8,0.2))
@@ -249,8 +249,11 @@ rho_estim <- function(data,Type,parallel=TRUE){
         Ncpus <- parallel::detectCores()-1
       }
         cl <- parallel::makeCluster(Ncpus, outfile="")
-        doParallel::registerDoParallel(cl)
-        M_rho <- foreach::foreach(i=1:(length(Type)-1), .combine='rbind',.export=c("c_R_2D", "C_R_2D","L_n_CC", "L_n_CD","L_n_DD"))%dopar%{
+        doSNOW::registerDoSNOW(cl)
+        pb <- txtProgressBar(min=1, max=length(Type)-1, style=3)
+        progress <- function(n) setTxtProgressBar(pb, n)
+        opts <- list(progress=progress)
+        M_rho <- foreach::foreach(i=1:(length(Type)-1), .combine='rbind',.export=c("c_R_2D", "C_R_2D","L_n_CC", "L_n_CD","L_n_DD"),.options.snow=opts)%dopar%{
             rho_i <- c(rep(0,i-1),1) 
             for (j in (i+1):length(Type)){
                 if (Type[i] == "C" & Type[j] == "C"){
@@ -269,6 +272,7 @@ rho_estim <- function(data,Type,parallel=TRUE){
             }
             return(rho_i)
         }
+        close(pb)
         M_rho <- rbind(M_rho, c(rep(0,length(Type)-1),1))
         parallel::stopCluster(cl)
         M_rho <- M_rho + t(M_rho)-diag(1,length(Type),length(Type))

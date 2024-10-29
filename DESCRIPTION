@@ -1,10 +1,10 @@
 Package: heterocop
 Type: Package
-Title: Semi-parametric estimation with Gaussian Copula
+Title: Semi-Parametric Estimation with Gaussian Copula
 Version: 0.1.0
 Author: Julie Cartier, Florence Jaffrezic, Gildas Mazo, Ekaterina Tomilina
 Maintainer: Ekaterina Tomilina <ekaterina.tomilina@inrae.fr>
-Description: This package generates random vectors which are linked by a Gaussian copula. It can also estimate the correlation matrix of the Gaussian copula in order to identify independencies within the data.
+Description: A method for generating random vectors which are linked by a Gaussian copula. It also enables to estimate the correlation matrix of the Gaussian copula in order to identify independencies within the data.
 Imports:
     mvtnorm,
     stats,
@@ -13,7 +13,8 @@ Imports:
     doParallel,
     graphics,
     foreach,
-    stringr
+    stringr,
+    doSNOW
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -24,5 +25,6 @@ Suggests:
     knitr,
     rmarkdown,
     kableExtra,
-    dplyr
+    dplyr,
+    doSNOW
 VignetteBuilder: knitr
