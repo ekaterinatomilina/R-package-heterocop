@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 bibliography: biblio.bib
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{heterocop}
+  %\VignetteIndexEntry{heterocop: an R package for Gaussian copula semi-parametric inference for heterogeneous data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
