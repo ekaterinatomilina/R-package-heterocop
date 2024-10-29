@@ -1,5 +1,5 @@
 ---
-title: "heterocop: an R package for Gaussian copula semi-parametric inference for mixed data"
+title: "heterocop: an R package for Gaussian copula semi-parametric inference for heterogeneous data"
 author: "Ekaterina Tomilina"
 date: "`r Sys.Date()`"
 output: github_document
