@@ -210,11 +210,11 @@ L_n_CD <- function(theta, F1, F2m, F2p){
 #' M <- diag_block_matrix(c(3,4,5),c(0.7,0.8,0.2))
 #' data <- CopulaSim(20,M,c(rep("qnorm(0,1)",6),rep("qexp(0.5)",4),
 #' rep("qbinom(4,0.8)",2)),random=FALSE)[[1]]
-#' rho_estim(data,c(rep("C",10),rep("D",2)),parallel=FALSE)
+#' rho_estim(data,c(rep("C",10),rep("D",2)))
 #' 
 #' @export
 
-rho_estim <- function(data,Type,parallel=TRUE){
+rho_estim <- function(data,Type,parallel=FALSE){
     
     F = fdr_d(data, Type)
     M_rho = diag(length(Type))
@@ -329,6 +329,8 @@ matrix_cor_ts <- function(R, TS, binary = TRUE){
 #' @export
 
 cor_network_graph <- function(R, TS, binary = TRUE, legend){
+  oldpar <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(oldpar))
   legend <- factor(legend,levels=unique(legend))
   network_ref <- igraph::graph_from_adjacency_matrix(matrix_cor_ts(R, TS, binary),mode="undirected", diag=F, weighted=TRUE)
   colors <- grDevices::hcl.colors(length(unique(legend)),palette="PinkYl")

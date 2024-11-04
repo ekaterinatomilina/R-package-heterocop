@@ -11,7 +11,7 @@
 * checking extension type ... Package
 * this is package ‘heterocop’ version ‘0.1.0.0’
 * package encoding: UTF-8
-* checking CRAN incoming feasibility ... [6s/14s] NOTE
+* checking CRAN incoming feasibility ... [7s/16s] NOTE
 Maintainer: ‘Ekaterina Tomilina <ekaterina.tomilina@inrae.fr>’
 
 New submission
@@ -29,7 +29,8 @@ Uses the superseded package: ‘doSNOW’
 * checking whether package ‘heterocop’ can be installed ... OK
 * checking installed package size ... OK
 * checking package directory ... OK
-* checking for future file timestamps ... OK
+* checking for future file timestamps ... NOTE
+unable to verify current time
 * checking ‘build’ directory ... OK
 * checking DESCRIPTION meta-information ... OK
 * checking top-level files ... OK
@@ -68,11 +69,11 @@ Uses the superseded package: ‘doSNOW’
 * checking examples ... OK
 * checking for unstated dependencies in vignettes ... OK
 * checking package vignettes in ‘inst/doc’ ... OK
-* checking re-building of vignette outputs ... OK
+* checking re-building of vignette outputs ... [10s/10s] OK
 * checking PDF version of manual ... OK
 * checking HTML version of manual ... NOTE
 Skipping checking HTML validation: no command 'tidy' found
 * checking for non-standard things in the check directory ... OK
 * checking for detritus in the temp directory ... OK
 * DONE
-Status: 2 NOTEs
+Status: 3 NOTEs

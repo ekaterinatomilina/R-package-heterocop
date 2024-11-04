@@ -1,8 +1,8 @@
 heterocop: an R package for Gaussian copula semi-parametric inference
-for mixed data
+for heterogeneous data
 ================
 Ekaterina Tomilina
-2024-10-18
+2024-11-04
 
 This package enables the user to quantify dependencies between mixed
 (continuous, discrete, binary) variables in the framework of a Gaussian
@@ -111,13 +111,13 @@ R <- matrix_gen(5,0.81)
 <tr>
 <td>
 
-|      |      |     |      |      |
-|-----:|-----:|----:|-----:|-----:|
-| 1.00 | 0.00 |   0 | 0.66 | 0.00 |
-| 0.00 | 1.00 |   0 | 0.00 | 0.49 |
-| 0.00 | 0.00 |   1 | 0.00 | 0.00 |
-| 0.66 | 0.00 |   0 | 1.00 | 0.00 |
-| 0.00 | 0.49 |   0 | 0.00 | 1.00 |
+|      |     |      |     |      |
+|-----:|----:|-----:|----:|-----:|
+| 1.00 |   0 | 0.61 |   0 | 0.00 |
+| 0.00 |   1 | 0.00 |   0 | 0.00 |
+| 0.61 |   0 | 1.00 |   0 | 0.25 |
+| 0.00 |   0 | 0.00 |   1 | 0.00 |
+| 0.00 |   0 | 0.25 |   0 | 1.00 |
 
 </td>
 <td>
@@ -147,34 +147,34 @@ randomization.
 R <- diag_block_matrix(c(3,5,2),c(0.7,0.3,0.5))
 CopulaSim(5,R,c(rep("qnorm(0,1)",5),rep("qexp(0.5)",3),rep("qbinom(4,0.8)",2)),random=TRUE)
 #> [[1]]
-#>             X1         X2         X3          X4         X5        X6        X7
-#> 1 -1.089134252  0.5232069  0.3876855  1.36404502 2.22151961 1.3530549 3.3331100
-#> 2 -0.002139848  0.2751454 -0.7825396 -0.19900487 0.59975407 4.1010099 0.3227235
-#> 3  2.359786314 -1.1978236  2.6050133  0.44768577 0.39552340 7.2441257 3.2497848
-#> 4  1.187899455  0.4613101 -0.8278819  0.59213314 2.06272144 0.8695877 0.7899809
-#> 5  0.114799322  1.7587785 -1.7438769  0.08446285 0.00618523 0.9913152 0.6635844
-#>         X8 X9 X10
-#> 1 7.895351  4   4
-#> 2 2.387090  4   4
-#> 3 1.356079  4   4
-#> 4 4.287998  3   4
-#> 5 1.716021  2   3
+#>            X1         X2           X3         X4         X5        X6        X7
+#> 1 -1.73849915 -2.5854144 -0.730446319 -1.2792521  0.0981897 0.1814736 0.7836021
+#> 2  0.44803980 -0.7345427 -0.003651207  0.6634282  0.1731174 0.8679078 0.8065993
+#> 3  0.78492960  0.1537584 -0.877786109 -1.6579521  0.8827697 5.3532675 4.7820905
+#> 4 -0.02271631 -0.3291066  0.452212902  0.2162814  1.2729031 0.2157524 0.3793821
+#> 5  0.57439089  0.4808275  0.412052927 -0.5959660 -0.3550067 5.7600745 4.5487510
+#>          X8 X9 X10
+#> 1 0.2287008  2   2
+#> 2 2.2532760  2   3
+#> 3 0.3358859  3   4
+#> 4 0.2228197  2   3
+#> 5 1.8628013  4   4
 #> 
 #> [[2]]
 #>       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-#>  [1,]  1.0  0.0  0.0  0.3  0.0  0.3  0.0  0.3  0.0   0.3
-#>  [2,]  0.0  1.0  0.0  0.0  0.0  0.0  0.7  0.0  0.7   0.0
-#>  [3,]  0.0  0.0  1.0  0.0  0.5  0.0  0.0  0.0  0.0   0.0
-#>  [4,]  0.3  0.0  0.0  1.0  0.0  0.3  0.0  0.3  0.0   0.3
-#>  [5,]  0.0  0.0  0.5  0.0  1.0  0.0  0.0  0.0  0.0   0.0
-#>  [6,]  0.3  0.0  0.0  0.3  0.0  1.0  0.0  0.3  0.0   0.3
-#>  [7,]  0.0  0.7  0.0  0.0  0.0  0.0  1.0  0.0  0.7   0.0
-#>  [8,]  0.3  0.0  0.0  0.3  0.0  0.3  0.0  1.0  0.0   0.3
-#>  [9,]  0.0  0.7  0.0  0.0  0.0  0.0  0.7  0.0  1.0   0.0
-#> [10,]  0.3  0.0  0.0  0.3  0.0  0.3  0.0  0.3  0.0   1.0
+#>  [1,]  1.0  0.0  0.0  0.0  0.3  0.0  0.3  0.3  0.3   0.0
+#>  [2,]  0.0  1.0  0.0  0.5  0.0  0.0  0.0  0.0  0.0   0.0
+#>  [3,]  0.0  0.0  1.0  0.0  0.0  0.7  0.0  0.0  0.0   0.7
+#>  [4,]  0.0  0.5  0.0  1.0  0.0  0.0  0.0  0.0  0.0   0.0
+#>  [5,]  0.3  0.0  0.0  0.0  1.0  0.0  0.3  0.3  0.3   0.0
+#>  [6,]  0.0  0.0  0.7  0.0  0.0  1.0  0.0  0.0  0.0   0.7
+#>  [7,]  0.3  0.0  0.0  0.0  0.3  0.0  1.0  0.3  0.3   0.0
+#>  [8,]  0.3  0.0  0.0  0.0  0.3  0.0  0.3  1.0  0.3   0.0
+#>  [9,]  0.3  0.0  0.0  0.0  0.3  0.0  0.3  0.3  1.0   0.0
+#> [10,]  0.0  0.0  0.7  0.0  0.0  0.7  0.0  0.0  0.0   1.0
 #> 
 #> [[3]]
-#>  [1]  7  5  9  4  3  6  8  1 10  2
+#>  [1]  9  5  3  1 10  8  6  2  7  4
 ```
 
 Additionally, the gauss_gen function, which is used in CopulaSim,
@@ -224,287 +224,63 @@ X10
 <tbody>
 <tr>
 <td style="text-align:right;">
-0.71
-</td>
-<td style="text-align:right;">
-0.74
-</td>
-<td style="text-align:right;">
-0.90
-</td>
-<td style="text-align:right;">
-0.55
-</td>
-<td style="text-align:right;">
-0.05
-</td>
-<td style="text-align:right;">
-0.82
-</td>
-<td style="text-align:right;">
-0.27
-</td>
-<td style="text-align:right;">
-0.26
-</td>
-<td style="text-align:right;">
-0.33
-</td>
-<td style="text-align:right;">
-0.63
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
 0.85
-</td>
-<td style="text-align:right;">
-0.66
-</td>
-<td style="text-align:right;">
-0.65
 </td>
 <td style="text-align:right;">
 0.43
 </td>
 <td style="text-align:right;">
-0.69
+0.14
 </td>
 <td style="text-align:right;">
-0.44
+0.34
 </td>
 <td style="text-align:right;">
-0.55
+0.36
 </td>
 <td style="text-align:right;">
-0.27
+0.58
 </td>
 <td style="text-align:right;">
-0.31
+0.22
 </td>
 <td style="text-align:right;">
-0.37
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-0.46
-</td>
-<td style="text-align:right;">
-0.33
-</td>
-<td style="text-align:right;">
-0.40
+0.03
 </td>
 <td style="text-align:right;">
 0.68
 </td>
 <td style="text-align:right;">
-0.19
-</td>
-<td style="text-align:right;">
-0.25
-</td>
-<td style="text-align:right;">
-0.16
-</td>
-<td style="text-align:right;">
-0.59
-</td>
-<td style="text-align:right;">
-0.01
-</td>
-<td style="text-align:right;">
-0.00
+0.78
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-0.89
+0.21
 </td>
 <td style="text-align:right;">
-0.95
+0.37
 </td>
 <td style="text-align:right;">
-0.98
-</td>
-<td style="text-align:right;">
-0.45
-</td>
-<td style="text-align:right;">
-0.51
-</td>
-<td style="text-align:right;">
-0.30
-</td>
-<td style="text-align:right;">
-0.82
-</td>
-<td style="text-align:right;">
-0.43
-</td>
-<td style="text-align:right;">
-0.14
-</td>
-<td style="text-align:right;">
-0.49
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-0.41
-</td>
-<td style="text-align:right;">
-0.39
-</td>
-<td style="text-align:right;">
-0.14
-</td>
-<td style="text-align:right;">
-0.95
-</td>
-<td style="text-align:right;">
-0.51
-</td>
-<td style="text-align:right;">
-0.85
-</td>
-<td style="text-align:right;">
-0.69
-</td>
-<td style="text-align:right;">
-0.46
-</td>
-<td style="text-align:right;">
-0.16
-</td>
-<td style="text-align:right;">
-0.70
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-0.97
-</td>
-<td style="text-align:right;">
-0.97
-</td>
-<td style="text-align:right;">
-0.88
-</td>
-<td style="text-align:right;">
-0.39
-</td>
-<td style="text-align:right;">
-0.91
-</td>
-<td style="text-align:right;">
-0.98
+0.83
 </td>
 <td style="text-align:right;">
 0.31
 </td>
 <td style="text-align:right;">
-0.62
+0.31
 </td>
 <td style="text-align:right;">
-0.84
+0.87
 </td>
 <td style="text-align:right;">
-0.23
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-0.56
+0.25
 </td>
 <td style="text-align:right;">
-0.14
+0.28
 </td>
 <td style="text-align:right;">
-0.56
-</td>
-<td style="text-align:right;">
-0.95
-</td>
-<td style="text-align:right;">
-0.36
-</td>
-<td style="text-align:right;">
-0.94
-</td>
-<td style="text-align:right;">
-0.41
-</td>
-<td style="text-align:right;">
-0.74
-</td>
-<td style="text-align:right;">
-0.74
-</td>
-<td style="text-align:right;">
-0.36
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-0.11
-</td>
-<td style="text-align:right;">
-0.11
-</td>
-<td style="text-align:right;">
-0.04
-</td>
-<td style="text-align:right;">
-0.75
-</td>
-<td style="text-align:right;">
-0.71
-</td>
-<td style="text-align:right;">
-0.92
-</td>
-<td style="text-align:right;">
-0.91
-</td>
-<td style="text-align:right;">
-0.81
-</td>
-<td style="text-align:right;">
-0.11
-</td>
-<td style="text-align:right;">
-0.12
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-0.73
-</td>
-<td style="text-align:right;">
-0.63
-</td>
-<td style="text-align:right;">
-0.62
-</td>
-<td style="text-align:right;">
-0.73
-</td>
-<td style="text-align:right;">
-0.99
-</td>
-<td style="text-align:right;">
-0.89
-</td>
-<td style="text-align:right;">
-0.94
-</td>
-<td style="text-align:right;">
-1.00
-</td>
-<td style="text-align:right;">
-0.58
+0.79
 </td>
 <td style="text-align:right;">
 0.50
@@ -512,34 +288,258 @@ X10
 </tr>
 <tr>
 <td style="text-align:right;">
-0.16
+0.74
 </td>
 <td style="text-align:right;">
-0.08
+0.65
 </td>
 <td style="text-align:right;">
-0.05
+0.90
 </td>
 <td style="text-align:right;">
-0.79
+0.10
 </td>
 <td style="text-align:right;">
-0.14
+0.54
 </td>
 <td style="text-align:right;">
-0.36
+0.33
 </td>
 <td style="text-align:right;">
-0.35
+0.75
+</td>
+<td style="text-align:right;">
+0.15
+</td>
+<td style="text-align:right;">
+0.31
+</td>
+<td style="text-align:right;">
+0.51
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.39
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+0.81
+</td>
+<td style="text-align:right;">
+0.61
+</td>
+<td style="text-align:right;">
+0.87
+</td>
+<td style="text-align:right;">
+0.65
+</td>
+<td style="text-align:right;">
+0.68
+</td>
+<td style="text-align:right;">
+0.93
+</td>
+<td style="text-align:right;">
+0.61
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.34
+</td>
+<td style="text-align:right;">
+0.28
+</td>
+<td style="text-align:right;">
+0.31
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:right;">
+0.28
 </td>
 <td style="text-align:right;">
 0.67
 </td>
 <td style="text-align:right;">
+0.91
+</td>
+<td style="text-align:right;">
+0.52
+</td>
+<td style="text-align:right;">
+0.59
+</td>
+<td style="text-align:right;">
+0.55
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.30
+</td>
+<td style="text-align:right;">
+0.33
+</td>
+<td style="text-align:right;">
+0.45
+</td>
+<td style="text-align:right;">
+0.65
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+0.67
+</td>
+<td style="text-align:right;">
+0.51
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+<td style="text-align:right;">
+0.40
+</td>
+<td style="text-align:right;">
+0.33
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.30
+</td>
+<td style="text-align:right;">
 0.49
 </td>
 <td style="text-align:right;">
-0.44
+0.56
+</td>
+<td style="text-align:right;">
+0.65
+</td>
+<td style="text-align:right;">
+0.18
+</td>
+<td style="text-align:right;">
+0.54
+</td>
+<td style="text-align:right;">
+0.45
+</td>
+<td style="text-align:right;">
+0.42
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:right;">
+0.31
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:right;">
+0.11
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+<td style="text-align:right;">
+0.61
+</td>
+<td style="text-align:right;">
+0.54
+</td>
+<td style="text-align:right;">
+0.17
+</td>
+<td style="text-align:right;">
+0.75
+</td>
+<td style="text-align:right;">
+0.64
+</td>
+<td style="text-align:right;">
+0.87
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.58
+</td>
+<td style="text-align:right;">
+0.30
+</td>
+<td style="text-align:right;">
+0.61
+</td>
+<td style="text-align:right;">
+0.45
+</td>
+<td style="text-align:right;">
+0.79
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:right;">
+0.62
+</td>
+<td style="text-align:right;">
+0.12
+</td>
+<td style="text-align:right;">
+0.29
+</td>
+<td style="text-align:right;">
+0.38
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.34
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+<td style="text-align:right;">
+0.60
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+0.08
+</td>
+<td style="text-align:right;">
+0.22
+</td>
+<td style="text-align:right;">
+0.53
+</td>
+<td style="text-align:right;">
+0.55
+</td>
+<td style="text-align:right;">
+0.11
+</td>
+<td style="text-align:right;">
+0.14
 </td>
 </tr>
 </tbody>
