@@ -22,7 +22,7 @@ require(kableExtra)
 require(knitr)
 ```
 
-This package enables the user to quantify dependencies between mixed (continuous, discrete, binary) variables in the framework of a Gaussian copula model by estimating the correlation matrix of the copula (@tmj).
+This package enables the user to quantify dependencies between mixed (continuous, discrete, binary) variables in the framework of a Gaussian copula model by estimating the correlation matrix of the copula (@tmj) as well as its conditional correlation structure.
 
 ## Context
 
@@ -34,11 +34,12 @@ Let $X_1, ..., X_d$ be mixed variables (continuous or discrete). Let $F_1, ..., 
 $$F(X_1, ..., X_d)=C_\Sigma(F_1(X_1), ..., F_d(X_d)):=\Phi_\Sigma(\Phi^{-1}(F_1(X_1)), ..., \Phi^{-1}(F_d(X_d))).$$
 
 # Estimation
+Our package enables the estimation of $\Sigma$, the correlation matrix of the copula, and $\Omega=\Sigma^{-1}$, the conditional covariance matrix of the copula..
 
-In order to estimate the correlation matrix of the copula, the rho_estim function uses a semiparametric pairwise maximum likelihood estimator. It returns the estimated correlation matrix of the copula and takes as arguments the data set and the variable types in a vector. In the example below, we have used a subset of the ICGC data set (@ICGC) which contains 5 RNA-seq, 5 protein and 5 mutation variables. We have specified the variable types, where a "C" stands for "continuous" and a "D" for "discrete".
+In order to estimate $\Sigma$, the rho_estim function uses a semiparametric pairwise maximum likelihood estimator. It returns the estimated correlation matrix of the copula and takes as arguments the data set and the variable types in a vector. In the example below, we have used a subset of the ICGC data set (@ICGC) which contains 5 RNA-seq, 5 protein and 5 mutation variables. We have specified the variable types, where a "C" stands for "continuous" and a "D" for "discrete".
 ```{r,warning=FALSE,message=FALSE}
 data(icgc_data)
-R <- rho_estim(icgc_data,c(rep("C",10),rep("D",5)))
+R <- rho_estim(icgc_data,c(rep("D",5),rep("C",5),rep("D",5)))
 ```
 
 A $6\times6$ subset of the obtained copula correlation matrix is represented below.
@@ -46,11 +47,39 @@ A $6\times6$ subset of the obtained copula correlation matrix is represented bel
 knitr::kable(head(R[,1:6]), digits = 2) 
 ```
 
+The precision matrix, $\Omega=\Sigma^{-1}$ that encodes the latent conditional correlation network, can also be estimated via gLASSO penalized inversion (@friedman). Because it automatically sets some coefficients to zero, no posterior thresholding is needed. Our function omega_estim takes as arguments the data set and the type of variables (or the correlation matrix if it has already been estimated), a grid of penalization parameters $\lambda$, and the number of observations in the data if a correlation matrix has been entered as the first parameter.
+```{r, warning=FALSE,message=FALSE}
+O <- omega_estim(R, lambda=seq(0.4,0.5,0.01), n=250)
+```
+
+It returns a list containing: the correlation matrix, the optimal precision matrix according to the HBIC criterion, the optimal corresponding $\lambda$, all tested values of $\lambda$ and all corresponding values of the $HBIC$. A $6\times6$ subset of the obtained copula penalized conditional correlation matrix is represented below.
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+knitr::kable(head(O[[2]][,1:6]), digits = 2) 
+```
+
+The minimum $\lambda$ and $HBIC$ are returned by the package.
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+O[[3]]
+O[[4]]
+```
+
+Finally, it is possible to graphically represent the evolution of the HBIC depending on the $\lambda$ by running the following code:
+```{r,warning=FALSE,message=FALSE}
+plot(O[[5]],O[[6]],xlab="Lambda",ylab="HBIC",type="l")
+```
+
+
 # Graphical representation
 
-The cor_network_graph function enables to visualize the obtained network. It takes as arguments the dataset, the correlation matrix, the threshold and a legend.
+The cor_network_graph function enables to visualize the obtained network. For a correlation network, it takes as arguments the dataset, the correlation matrix, the threshold and a legend.
 ```{r}
 cor_network_graph(R,TS=0.3,legend=c(rep("RNAseq",5),rep("Proteins",5),rep("Mutations",5)))
+```
+
+To visualize the conditional correlation network that is encoded in $\Omega$, it is sufficient to specify the threshold parameter to exactly zero as the estimated null coefficients have been shrunk to zero by penalization.
+
+```{r,warning=FALSE,message=FALSE}
+cor_network_graph(O[[2]],TS=0,legend=c(rep("RNAseq",5),rep("Proteins",5),rep("Mutations",5)))
 ```
 
 ## Simulation

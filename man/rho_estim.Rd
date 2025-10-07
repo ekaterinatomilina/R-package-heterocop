@@ -4,14 +4,14 @@
 \alias{rho_estim}
 \title{rho_estim}
 \usage{
-rho_estim(data, Type, parallel = FALSE)
+rho_estim(data, Type, ncores = 1)
 }
 \arguments{
 \item{data}{an nxd data frame containing n observations of d variables}
 
 \item{Type}{a vector containing the type of the variables, "C" for continuous and "D" for discrete}
 
-\item{parallel}{a boolean encoding whether the computations should be parallelized}
+\item{ncores}{an integer specifying the number of cores to be used for parallel computation. "1" by default, leading to non-parallel computation.}
 }
 \value{
 the dxd estimated correlation matrix of the Gaussian copula
